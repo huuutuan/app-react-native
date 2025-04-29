@@ -1,7 +1,8 @@
 import react, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/config';
 
 
 const LoginScreen = ({ navigation }) => {
@@ -9,8 +10,16 @@ const LoginScreen = ({ navigation }) => {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 
+	const handleRegister = () => {
+		try {
+			navigation.navigate('Register'); // Navigate to Register screen
+		} catch (error) {
+			console.error('Register Error:', error.message);
+		}
+
+	}
+
 	const handleLogin = async () => {
-		const auth = getAuth();
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
 			console.log('User logged in:', userCredential.user);
@@ -81,7 +90,7 @@ const LoginScreen = ({ navigation }) => {
 		  <Text style={styles.buttonText}>Đăng nhập</Text>
 		</TouchableOpacity>
 	  
-		<TouchableOpacity onPress={() => navigation.navigate('Register')}>
+		<TouchableOpacity onPress={handleRegister}>
 		  <Text style={styles.link}>Chưa có tài khoản? Đăng ký ngay</Text>
 		</TouchableOpacity>
 		<TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>

@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {getAuth, sendPasswordResetEmail} from 'firebase/auth'
 import { View, TextInput, Button, Text, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 
-const FogotPassword = () => {
+const ForgotPassword = ({navigation}) => {
 	const [email, setEmail] = useState('');
 	const [error, setError] = useState('');
 	const handleForgotPassword = async () => {
@@ -28,6 +28,7 @@ const FogotPassword = () => {
 			onChangeText={setEmail}
 		/>
 		<Button title="Gửi" onPress={handleForgotPassword} />
+		<Button title='Quay lại' onPress={() => navigation.goBack()} />
 		{error ? <Text style={styles.error}>{error}</Text> : null}
 	</KeyboardAvoidingView>	
 		
@@ -61,4 +62,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default FogotPassword
+export default ForgotPassword

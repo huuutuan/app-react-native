@@ -1,17 +1,19 @@
 import React, {useState} from 'react'
-import {getAuth, createUserWithEmailAndPassword} from 'firebase/auth'
+import {createUserWithEmailAndPassword} from 'firebase/auth'
 import { View, TextInput, Button, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity} from 'react-native';
-
+import { auth, db } from '../firebase/config';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 const Register = ({navigation}) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [name, setName] = useState('');
+	const [phone, setPhone] = useState('');
 	const [error, setError] = useState('');
 
 	const handleRegister = async () => {
-		const auth = getAuth();
 		if (!/\S+@\S+\.\S+/.test(email)) {
-			alert('Lỗi', 'Email không hợp lệ');
+			alert('Email không hợp lệ');
 			return;
 		}
 		if (password.length < 6) {
@@ -20,10 +22,17 @@ const Register = ({navigation}) => {
 		}
 		try {
 			const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-			console.log('User registered:', userCredential.user);
+			const user = userCredential.user;
+			console.log('User registered:', user);
 			alert('Đăng ký thành công!');
-			navigation.navigate('Login'); // Navigate to Login screen after successful registration
+			await setDoc(doc(db, 'users', user.uid), {
+				name: name,
+				phone: phone,
+				email: email,
+				createdAt: serverTimestamp(),
+			}); // Lưu thông tin người dùng vào Firestore
+			
+			 // Navigate to Login screen after successful registration
 			
 		} catch (error) {
 			console.error('Register Error:', error.message);
@@ -40,9 +49,24 @@ const Register = ({navigation}) => {
 	<Text style={styles.title}>Đăng ký</Text>
 	<TextInput
 		style={styles.input}
+		placeholder="Name"
+		placeholderTextColor="#999"
+		autoCapitalize="none"
+		value={name}
+		onChangeText={setName}
+	/>
+	<TextInput
+		style={styles.input}
+		placeholder="Phone"
+		placeholderTextColor="#999"
+		autoCapitalize="none"
+		value={phone}
+		onChangeText={setPhone}
+	/>
+	<TextInput
+		style={styles.input}
 		placeholder="Email"
 		placeholderTextColor="#999"
-		keyboardType="email-address"
 		autoCapitalize="none"
 		value={email}
 		onChangeText={setEmail}
